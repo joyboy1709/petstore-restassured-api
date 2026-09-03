@@ -1,25 +1,42 @@
 package com.globant.automation.config;
 
-import io.restassured.RestAssured;
 import org.testng.annotations.BeforeSuite;
-
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 public class TestRunner {
 
+    public static final String PROPERTIES_FILE = "src/test/resources/config.properties";
+    public static final Properties PROPERTIES = new Properties();
+
+    private static String baseUrl;
+    private static String apiKey;
+
     @BeforeSuite
-    public void configureRestAssured() throws IOException {
-        Properties properties = new Properties();
+    public void setUpEnvironment() {
+        loadProperties();
+        baseUrl = getConfigVariable("url.base");
+        apiKey = getConfigVariable("apikey");
+    }
 
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
-            if (input == null) {
-                throw new IOException("No se encontró config.properties");
-            }
-            properties.load(input);
+    private void loadProperties() {
+        try (FileInputStream fileInputStream = new FileInputStream(PROPERTIES_FILE)) {
+            PROPERTIES.load(fileInputStream);
+        } catch (IOException e) {
+            System.out.println(String.format("Error loading the properties file: %s", e.getMessage()));
         }
+    }
 
-        RestAssured.baseURI = properties.getProperty("base.uri");
+    public String getConfigVariable(String key) {
+        return PROPERTIES.getProperty(key);
+    }
+
+    public static String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public static String getApiKey() {
+        return apiKey;
     }
 }
