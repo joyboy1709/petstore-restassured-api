@@ -45,7 +45,7 @@ public class PetTests extends TestRunner {
                 .get("/pet/{petId}")
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(petId))
+                .body("id", equalTo((int) petId))
                 .body("name", equalTo("FirulaisPerfDog"));
     }
 }
